@@ -40,8 +40,8 @@ namespace UnitTestingMinimalApi.APIs
             try
             {
                 if (player == null) return Results.BadRequest("Invalid request body...");
-                Player results = await repository.AddAsync(player);
-                return Results.Ok(new { PlayerId = results.ID });
+                await repository.SignPlayer(player);
+                return Results.CreatedAtRoute(nameof(GetById), player);
             }
             catch (Exception ex)
             {

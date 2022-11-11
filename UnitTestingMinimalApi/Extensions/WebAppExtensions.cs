@@ -1,6 +1,6 @@
 ﻿namespace UnitTestingMinimalApi.Extensions
 {
-    public static class AppExtensions
+    public static class WebAppExtensions
     {
         public static void RegisterDevMiddlewares(this WebApplication app)
         {
@@ -11,6 +11,7 @@
                 c.RoutePrefix = "";
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Player API");
             });
+            app.MapControllers();
         }
     }
 }

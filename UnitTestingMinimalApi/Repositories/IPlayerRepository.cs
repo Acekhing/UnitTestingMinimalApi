@@ -6,7 +6,7 @@ namespace UnitTestingMinimalApi.Repositories
     {
         public Task<List<Player>> GetAllAsync();
         public Task<Player?> GetByIdAsync(Guid id);
-        public Task<Player> AddAsync(Player player);
+        public Task SignPlayer(Player player);
         public Task DeleteAsync(Guid id);
         public Task<int> SaveChanges();
     }

@@ -13,11 +13,10 @@ namespace UnitTestingMinimalApi.Repositories
             _playerContext = playerContext;
         }
 
-        public async Task<Player> AddAsync(Player player)
+        public async Task SignPlayer(Player player)
         {
-            var result = await _playerContext.Players.AddAsync(player);
+            await _playerContext.Players.AddAsync(player);
             await SaveChanges();
-            return result.Entity;
         }
 
         public async Task DeleteAsync(Guid id)
