@@ -6,40 +6,50 @@ namespace UnitTestingMinimalApi.Repositories
 {
     public class PlayerRepository: IPlayerRepository
     {
-        private readonly PlayerContext _playerContext;
+        private readonly IPlayerContext _playerContext;
 
-        public PlayerRepository(PlayerContext playerContext)
+        public PlayerRepository(IPlayerContext playerContext)
         {
             _playerContext = playerContext;
         }
 
         public async Task SignPlayer(Player player)
         {
-            await _playerContext.Players.AddAsync(player);
-            await SaveChanges();
+            await _playerContext.Insert(player);
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            Player? player = await _playerContext.Players.FindAsync(id);
-            if (player != null) _playerContext.Players.Remove(player);
-            await SaveChanges();
+            await _playerContext.Delete(id);
         }
 
         public async Task<List<Player>> GetAllAsync()
         {
-            return await _playerContext.Players.ToListAsync();
+            var players = await _playerContext.Get();
+            if(players.Count() == 0)
+            {
+                // Returns empty list
+                return new List<Player>();
+            }
+            // Returns players
+            return players;
         }
 
         public async Task<Player?> GetByIdAsync(Guid id)
         {
-            Player? player = await _playerContext.Players.FindAsync(id);
-            return player != null ? player : null;
+            Player? player = await _playerContext.Find(id);
+            
+            if(player == null)
+            {
+                return null;
+            }
+            return player;
         }
 
         public async Task<int> SaveChanges()
         {
-            return await _playerContext.SaveChangesAsync();
+            await _playerContext.SaveChanges();
+            return 1;
         }
     }
 }

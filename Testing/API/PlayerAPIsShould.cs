@@ -12,6 +12,10 @@ using Xunit;
 
 namespace Testing.APIs
 {
+
+    /* API Testing Practice using xUnit */
+    // The playerAPI depends on PlayerRepository 
+    // So we use FakePlayerRepository
     public class PlayerAPIsShould
     {
         private readonly IPlayerRepository _playerRepository;

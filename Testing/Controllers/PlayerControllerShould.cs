@@ -7,6 +7,12 @@ using Xunit;
 
 namespace Testing.Controllers
 {
+
+    /* Controller Testing Practice using xUnit */
+    // Here the controller depends on the PlayerRepository
+    // So we create FakeRepository instance of PlayerRepository for the test
+    // Later on the PlayerRepository will be tested using Moq
+
     public class PlayerControllerShould
     {
         private readonly IPlayerRepository _playerRepository;
