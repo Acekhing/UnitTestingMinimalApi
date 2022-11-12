@@ -2,11 +2,11 @@
 
 namespace UnitTestingMinimalApi.Repositories
 {
-    public class MockPlayerRepository : IPlayerRepository
+    public class FakePlayerRepository : IPlayerRepository
     {
         private List<Player> _players;
 
-        public MockPlayerRepository()
+        public FakePlayerRepository()
         {
             _players = new List<Player>();
         }

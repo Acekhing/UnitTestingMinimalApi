@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Testing.Services
 {
-    public class PlayerModel_IsPlayerShould
+    public class PlayerExtensionShould
     {
         [Theory]
         [InlineData(14)]
@@ -50,21 +50,29 @@ namespace Testing.Services
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void IsValidName_FirstNameIsNullOrEmpty_ReturnNull(string name)
+        [InlineData(null, "Manu")]
+        [InlineData("", "Manu")]
+        public void GetFullName_FirstNameIsNullOrEmpty_ThrowsArgumentException(string fName, string lName)
         {
-            var mockPlayer = new Player() { FirstName = name };
-            Assert.Null(mockPlayer.IsValidName());
+            var mockPlayer = new Player() 
+            {
+                FirstName = fName ,
+                LastName = lName
+            };
+            Assert.Throws<ArgumentException>(paramName:"FirstName", () => mockPlayer.GetFullName());
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void IsValidName_LastNameIsNullOrEmpty_ReturnNull(string name)
+        [InlineData("Charles", null)]
+        [InlineData("Charles", "")]
+        public void GetFullName_LastNameIsNullOrEmpty_ThrowsArgumentException(string fName, string lName)
         {
-            var mockPlayer = new Player() { LastName = name };
-            Assert.Null(mockPlayer.IsValidName());
+            var mockPlayer = new Player()
+            {
+                FirstName = fName,
+                LastName = lName
+            };
+            Assert.Throws<ArgumentException>(paramName: "LastName", () => mockPlayer.GetFullName());
         }
 
         [Fact]
@@ -75,7 +83,7 @@ namespace Testing.Services
                 FirstName = "Cha",
                 LastName = "Man"
             };
-            Assert.Null(mockPlayer.IsValidName());
+            Assert.Throws<FormatException>(() => mockPlayer.GetFullName());
         }
 
         [Fact]
@@ -87,7 +95,7 @@ namespace Testing.Services
                 FirstName = "Charles",
                 LastName = "Manu"
             };
-            Assert.Equal(expected, mockPlayer.IsValidName());
+            Assert.Equal(expected, mockPlayer.GetFullName());
         }
     }
 }

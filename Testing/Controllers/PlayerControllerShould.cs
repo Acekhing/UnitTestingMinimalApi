@@ -7,27 +7,32 @@ using Xunit;
 
 namespace Testing.Controllers
 {
-    public class PlayerControllerTest
+    public class PlayerControllerShould
     {
         private readonly IPlayerRepository _playerRepository;
-        private readonly PlayerController _playerController;
+        private readonly PlayerController sut;
 
-        public PlayerControllerTest()
+        public PlayerControllerShould()
         {
-            _playerRepository = new MockPlayerRepository();
-            _playerController = new PlayerController(_playerRepository);
+            _playerRepository = new FakePlayerRepository();
+            sut = new PlayerController(_playerRepository);
         }
 
         [Fact]
         public async void GetPlayers_ListIsEmpty_ReturnNoContentResult()
         {
-            var actual = await _playerController.GetPlayers();
+            // Act
+            var actual = await sut.GetPlayers();
+
+            // Assert
             Assert.IsType<NoContentResult>(actual);
         }
 
         [Fact]
         public async void GetPlayers_ListNotEmpty_ReturnOkObjectResult()
         {
+
+            // Arrange
             Player player = new()
             {
                 FirstName = "Charles",
@@ -36,24 +41,32 @@ namespace Testing.Controllers
                 Age = 18
             };
 
-            await _playerController.SignPlayer(player);
+            // Act
+            await sut.SignPlayer(player);
+            var actual = await sut.GetPlayers();
 
-            var actual = await _playerController.GetPlayers();
-
+            // Assert
             Assert.IsType<OkObjectResult>(actual);
         }
 
         [Fact]
         public async void GetPlayerById_PlayerNotExist_ReturnNoFoundResult()
         {
+            // Arrange
             var id = Guid.NewGuid();
-            var actual = await _playerController.GetPlayerById(id);
+
+            // Act
+            var actual = await sut.GetPlayerById(id);
+
+            // Assert
             Assert.IsType<NotFoundResult>(actual);
         }
 
         [Fact]
         public async void GetPlayerById_PlayerExist_ReturnOkObjectResult()
         {
+
+            // Arrange
             Player player = new()
             {
                 FirstName = "Charles",
@@ -61,21 +74,26 @@ namespace Testing.Controllers
                 CountryCode = "GH",
                 Age = 18
             };
-
             var playerId = player.ID;
 
-            await _playerController.SignPlayer(player);
+            // Act
+            await sut.SignPlayer(player);
+            var actual = await sut.GetPlayerById(playerId);
 
-            var actual = await _playerController.GetPlayerById(playerId);
-
+            // Assert
             Assert.IsType<OkObjectResult>(actual);
         }
 
         [Fact]
         public async void SignPlayer_PlayerIsNull_ReturnBadRequestObjectResult()
         {
+            // Arrange
             Player player = null;
-            var actual = await _playerController.SignPlayer(player);
+
+            // Act
+            var actual = await sut.SignPlayer(player);
+
+            // Assert
             Assert.IsType<BadRequestObjectResult>(actual);
         }
 
@@ -87,8 +105,10 @@ namespace Testing.Controllers
         [InlineData("Charles", "")]
         [InlineData("", "Manu")]
         [InlineData("Cha", "Ma")]
-        public async void SignPlayer_IsNotValidName_ReturnUnprocessableEntityObjectResult(string fName, string lName)
+        public async void SignPlayer_IsNotValidName_ReturnBadRequestObjectResult(string fName, string lName)
         {
+
+            // Arrange
             Player player = new()
             {
                 FirstName = fName,
@@ -96,8 +116,12 @@ namespace Testing.Controllers
                 CountryCode = "GH",
                 Age = 16
             };
-            var actual = await _playerController.SignPlayer(player);
-            Assert.IsType<UnprocessableEntityObjectResult>(actual);
+
+            // Act
+            var actual = await sut.SignPlayer(player);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actual);
         }
 
         [Theory]
@@ -105,8 +129,10 @@ namespace Testing.Controllers
         [InlineData(15)]
         [InlineData(20)]
         [InlineData(21)]
-        public async void SignPlayer_IsNotEligible_ReturnUnprocessableEntityObjectResult(int age)
+        public async void SignPlayer_IsNotEligible_ReturnBadRequestObjectResult(int age)
         {
+
+            // Arrange
             Player player = new()
             {
                 FirstName = "Charles",
@@ -114,8 +140,12 @@ namespace Testing.Controllers
                 CountryCode = "GH",
                 Age = age
             };
-            var actual = await _playerController.SignPlayer(player);
-            Assert.IsType<UnprocessableEntityObjectResult>(actual);
+
+            // Act
+            var actual = await sut.SignPlayer(player);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actual);
         }
 
         [Theory]
@@ -123,8 +153,10 @@ namespace Testing.Controllers
         [InlineData("UN")]
         [InlineData("NG")]
         [InlineData("ZN")]
-        public async void SignPlayer_IsNotCitizen_ReturnUnprocessableEntityObjectResult(string code)
+        public async void SignPlayer_IsNotCitizen_ReturnBadRequestObjectResult(string code)
         {
+
+            // Arrange
             Player player = new()
             {
                 FirstName = "Charles",
@@ -132,13 +164,19 @@ namespace Testing.Controllers
                 CountryCode = code,
                 Age = 18
             };
-            var actual = await _playerController.SignPlayer(player);
-            Assert.IsType<UnprocessableEntityObjectResult>(actual);
+
+            // Act
+            var actual = await sut.SignPlayer(player);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actual);
         }
 
         [Fact]
         public async void SignPlayer_IsValidNameIsEligibleIsCitizen_ReturnCreatedAtRouteResult()
         {
+
+            // Arrange
             Player player = new()
             {
                 FirstName = "Charles",
@@ -146,7 +184,11 @@ namespace Testing.Controllers
                 CountryCode = "GH",
                 Age = 18
             };
-            var actual = await _playerController.SignPlayer(player);
+
+            // Act
+            var actual = await sut.SignPlayer(player);
+
+            // Assert
             Assert.IsType<CreatedAtRouteResult>(actual);
         }
     }

@@ -1,4 +1,5 @@
-﻿using UnitTestingMinimalApi.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using UnitTestingMinimalApi.Models;
 using UnitTestingMinimalApi.Repositories;
 
 namespace UnitTestingMinimalApi.APIs
@@ -15,47 +16,57 @@ namespace UnitTestingMinimalApi.APIs
         }
 
         // Request handler middlewares
-        public async Task<IResult> GetAll(IPlayerRepository repository)
+        public async Task<IActionResult> GetAll(IPlayerRepository repository)
         {
-            return Results.Ok(await repository.GetAllAsync());
+            var result = await repository.GetAllAsync();
+            if(result.Count == 0)
+            {
+                return new NoContentResult();
+            }
+            return new OkObjectResult(result);
         }
 
-        public async Task<IResult> GetById(IPlayerRepository repository, Guid id)
+        public async Task<IActionResult> GetById(IPlayerRepository repository, Guid id)
         {
             try
             {
+                if (id == Guid.Empty)
+                {
+                    return new BadRequestObjectResult("Provide Id");
+                }
+
                 Player? player = await repository.GetByIdAsync(id);
-                if (player == null) return Results.NotFound($"Player {id} do not exist");
-                return Results.Ok(player);
+                if (player == null) return new NotFoundObjectResult($"Player {id} do not exist");
+                return new OkObjectResult(player);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Results.BadRequest("Error getting player...");
+                return new BadRequestObjectResult("Error getting player...");
             }
         }
 
-        public async Task<IResult> Post(IPlayerRepository repository, Player player)
+        public async Task<IActionResult> Post(IPlayerRepository repository, Player player)
         {
             try
             {
-                if (player == null) return Results.BadRequest("Invalid request body...");
+                if (player == null) return new BadRequestObjectResult("Invalid request body...");
                 await repository.SignPlayer(player);
-                return Results.CreatedAtRoute(nameof(GetById), player);
+                return new CreatedAtRouteResult(nameof(GetById), player);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Results.BadRequest("Error signing player...");
+                return new BadRequestObjectResult("Error signing player...");
             }
         }
 
-        public async Task<IResult> Delete(IPlayerRepository repository, Guid id)
+        public async Task<IActionResult> Delete(IPlayerRepository repository, Guid id)
         {
             Player? player = await repository.GetByIdAsync(id);
-            if (player == null) return Results.NotFound();
+            if (player == null) return new NotFoundObjectResult("Player do not exist");
             await repository.DeleteAsync(id);
-            return Results.NoContent();
+            return new NoContentResult();
         }
     }
 }

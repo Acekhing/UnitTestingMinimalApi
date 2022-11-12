@@ -13,7 +13,8 @@ namespace UnitTestingMinimalApi.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddControllers();
-            services.AddTransient<IPlayerRepository, PlayerRepository>();
+            services.AddScoped<IPlayerRepository, PlayerRepository>();
+            services.AddScoped<IPlayerContext, PlayerContext>();
         }
     }
 }

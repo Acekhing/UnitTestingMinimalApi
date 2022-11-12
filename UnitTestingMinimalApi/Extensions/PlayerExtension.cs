@@ -45,11 +45,25 @@ namespace UnitTestingMinimalApi.Utils
 
             return true;
         }
-        public static string? IsValidName(this Player player)
+        public static string GetFullName(this Player player)
         {
-            if (player.FirstName == null || player.LastName == null) return null;
-            if (player.FirstName == "" || player.LastName == "") return null;
-            if (player.FirstName.Length < 4 || player.LastName.Length < 4) return null;
+            if (player.FirstName == null || player.FirstName == "")
+            {
+                throw new ArgumentException(message:"Firstname cannot be null or empty", paramName: nameof(player.FirstName));
+            }
+            if (player.LastName == null || player.LastName == "")
+            {
+                throw new ArgumentException(message: "Lastname cannot be null or empty", paramName: nameof(player.LastName));
+            }
+            if (player.FirstName.Length < 4)
+            {
+                throw new FormatException(message: "Firstname must be more than 3 characters");
+            };
+            if ( player.LastName.Length < 4)
+            {
+                throw new FormatException("Lastname must be more than 3 characters");
+            };
+
             return player.FirstName + " " + player.LastName;
         }
     }

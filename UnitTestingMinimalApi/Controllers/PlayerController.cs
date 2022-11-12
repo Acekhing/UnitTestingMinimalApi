@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using UnitTestingMinimalApi.Models;
 using UnitTestingMinimalApi.Repositories;
 using UnitTestingMinimalApi.Utils;
@@ -22,26 +23,26 @@ namespace UnitTestingMinimalApi.Controllers
         {
             try
             {
-                if (player == null) return new BadRequestObjectResult("Invalid Json");
+                if (player == null) throw new JsonException("Invalid Json");
 
-                if (player.IsValidName() == null) return new UnprocessableEntityObjectResult("Firstname or lastname should be provided and be more than 3 charaters");
+                if (player.GetFullName() == null) throw new ArgumentNullException("Invalid name provided");
 
-                if (!player.IsEliglePlayer()) return new UnprocessableEntityObjectResult("Player must be between 15 and 20 years");
+                if (!player.IsEliglePlayer()) throw new ArgumentException("Player must be between 15 and 20 years");
 
-                if (!player.IsCitizen()) return new UnprocessableEntityObjectResult("Country code can only be two letters eg: GH");
+                if (!player.IsCitizen()) throw new ArgumentException("Country code can only be two letters eg: GH");
 
-                if (player.IsEliglePlayer() && player.IsCitizen() && player.IsValidName() != null)
+                if (player.IsEliglePlayer() && player.IsCitizen() && player.GetFullName() != null)
                 {
                     await _playerRepository.SignPlayer(player);
                     return new CreatedAtRouteResult(nameof(GetPlayerById), player);
                 }
 
-                throw new NotImplementedException("Request needs further processing");
+                throw new NotImplementedException("Request could not be processed");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new BadRequestObjectResult("Something went wrong. Try again");
+                return new BadRequestObjectResult(ex.Message);
             }
 
         }
